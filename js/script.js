@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    //var directionsDisplay;
-
     var map;
 
     var myLatlng = new google.maps.LatLng(48.578058, 39.302333);
@@ -347,9 +345,9 @@ $(document).ready(function () {
 
     //add route on map
     function addRouteBetweenMarker(officesCoord) {
-        var e = { map: map};
-        directionsDisplay = new google.maps.DirectionsRenderer(e);
-        console.log("officesCoord ",officesCoord);
+
+        var mapRoute = {map: map};
+        var directionsDisplay = new google.maps.DirectionsRenderer(mapRoute);
         var start = officesCoord[0].lat+','+ officesCoord[0].lng;
         var end = officesCoord[officesCoord.length-1].lat+','+ officesCoord[officesCoord.length-1].lng;
 
@@ -357,15 +355,12 @@ $(document).ready(function () {
         var wps = [];
         ///первый и последний офис не вносим
         for(var i=1; i<officesCoord.length-1; i++){
-            console.log("officesCoord["+i+"].lat ",officesCoord[i].lat)
             var point = new google.maps.LatLng(officesCoord[i].lat,officesCoord[i].lng);
-            var tempLocation = {};
-            tempLocation.location = point;
-            wps.push(tempLocation);
-            //console.log('wps['+i+'] :',wps[i],' i',i);
+            //var tempLocation = {};
+            //tempLocation.location = point;
+            //объект должен включать поле location для google api
+            wps.push({location:point});
         }
-        console.log("start: ",start,"end: ", end, "wps: ", wps);
-        //return;
 
         var request = {
             origin: start,
@@ -374,7 +369,7 @@ $(document).ready(function () {
             //travelMode: google.maps.TravelMode.DRIVING
             travelMode:google.maps.DirectionsTravelMode.DRIVING
         };
-        directionsService = new google.maps.DirectionsService();
+        var directionsService = new google.maps.DirectionsService();
         directionsService.route(request,function (response, status) {
             //console.log("directionsService.route");
             if(status == google.maps.DirectionsStatus.OK){
