@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Апр 14 2016 г., 13:30
+-- Время создания: Апр 15 2016 г., 14:42
 -- Версия сервера: 10.1.10-MariaDB
 -- Версия PHP: 5.6.19
 
@@ -87,11 +87,11 @@ INSERT INTO `lugansk` (`id`, `address`, `name`, `indexmail`, `address2`, `addres
 --
 
 CREATE TABLE `route` (
-  `id` int(255) NOT NULL,
-  `indexmail` int(255) NOT NULL,
-  `latlocation` double NOT NULL,
-  `lnglocation` double NOT NULL,
-  `name` varchar(100) DEFAULT NULL
+  `id` int(254) NOT NULL,
+  `numberoute` int(255) NOT NULL,
+  `routepost` varchar(255) NOT NULL,
+  `track` varchar(255) NOT NULL,
+  `time` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -123,7 +123,7 @@ ALTER TABLE `lugansk`
 -- AUTO_INCREMENT для таблицы `route`
 --
 ALTER TABLE `route`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(254) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
