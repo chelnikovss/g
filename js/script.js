@@ -1,5 +1,8 @@
 $(document).ready(function () {
+    //var directionsDisplay;
+
     var map;
+
     var myLatlng = new google.maps.LatLng(48.578058, 39.302333);
     var title = "Почта ЛНР";
     var flagLoad = false;
@@ -311,15 +314,81 @@ $(document).ready(function () {
         ];
 
     function initialize() {
+
             var myOptions = {
                 zoom:12,
                 center: myLatlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
          map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+        //var e = {map: map};
+
+
          placeMarker(myLatlng, title);
          google.maps.event.addListener (map, 'click', function (event) { placeMarker(event.latLng, title); });
      };
+
+    function addMarker(location,title) {
+        //console.log("location", location);
+       var locationAdd = {};
+       locationAdd.lat = Number(location.lat);
+       locationAdd.lng = Number(location.lng);
+
+        console.log("locationAdd",locationAdd);
+
+        var marker = new google.maps.Marker({
+            position: locationAdd,
+            map: map,
+            title: title
+        });
+        var infowindow = new google.maps.InfoWindow({ content: title });
+        infowindow.open(map, marker);
+    }
+
+    //add route on map
+    function addRouteBetweenMarker(officesCoord) {
+        var e = { map: map};
+        directionsDisplay = new google.maps.DirectionsRenderer(e);
+        console.log("officesCoord ",officesCoord);
+        var start = officesCoord[0].lat+','+ officesCoord[0].lng;
+        var end = officesCoord[officesCoord.length-1].lat+','+ officesCoord[officesCoord.length-1].lng;
+
+
+        var wps = [];
+        ///первый и последний офис не вносим
+        for(var i=1; i<officesCoord.length-1; i++){
+            console.log("officesCoord["+i+"].lat ",officesCoord[i].lat)
+            var point = new google.maps.LatLng(officesCoord[i].lat,officesCoord[i].lng);
+            var tempLocation = {};
+            tempLocation.location = point;
+            wps.push(tempLocation);
+            //console.log('wps['+i+'] :',wps[i],' i',i);
+        }
+        console.log("start: ",start,"end: ", end, "wps: ", wps);
+        //return;
+
+        var request = {
+            origin: start,
+            destination: end,
+            waypoints: wps,
+            //travelMode: google.maps.TravelMode.DRIVING
+            travelMode:google.maps.DirectionsTravelMode.DRIVING
+        };
+        directionsService = new google.maps.DirectionsService();
+        directionsService.route(request,function (response, status) {
+            //console.log("directionsService.route");
+            if(status == google.maps.DirectionsStatus.OK){
+                //console.log("status == google.maps.DirectionsStatus.OK");
+                directionsDisplay.setDirections(response);
+                //directionsDisplay.setMap(map);
+            }
+            else{
+                console.log("Directions Request from " + start.toUrlValue(6) + " to " + end.toUrlValue(6) + " failed: " + status)
+            }
+        })
+    }
+
+
     function placeMarker(location,title) {
         var marker = new google.maps.Marker({
             position: location,
@@ -367,6 +436,7 @@ $(document).ready(function () {
         });
         e.preventDefault();
     });
+    
     function addOfficeRoute(office) {
         console.log("office:",office);
         $( ".office-route" ).append( office.indexmail+"<br>" );
@@ -378,7 +448,7 @@ $(document).ready(function () {
         addOffice.indexmail = office.indexmail;
         allOffice.push(addOffice);
 
-        //placeMarker(addOffice, office.indexmail)
+        addMarker(addOffice, office.indexmail);
 
         console.log("allOffice:",allOffice)
         $(".office-route").show();
@@ -419,10 +489,16 @@ $(document).ready(function () {
     }
 
     $('#calc').click(function () {
+        //временная заглушка
+        if(allOffice.length<2)
+            return;
         var sumDistance = 0,
             sumTime = 0;
+        //var coordOfficeOnRoute = [];
+        console.log("allOffice in distanceCount: ", allOffice);
         for(var i=0; i<allOffice.length - 1;i++)
         {
+            //формируем данные для гугла - без этого ошибка
             var start = allOffice[i].lat+','+allOffice[i].lng;
             var end = allOffice[i+1].lat+','+allOffice[i+1].lng;
             console.log("start:",start, " end:", end);
@@ -436,9 +512,15 @@ $(document).ready(function () {
                 $("#res").html(distanceFormat+" км");
                 $("#resTime").html(timeFormat+" Час:Мин:Сек");
             });
+
+            //var tempLocation = {};
+            //tempLocation.point = start;
+            //coordOfficeOnRoute.push(tempLocation);
+
         }
+        addRouteBetweenMarker(allOffice);
         $('.res-dist h2').show();
         $('.office-route').css({'color':'green','font-weight':'bold','font-size': '30px'});
     });
-    //www3
+
 });

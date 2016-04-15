@@ -1,7 +1,5 @@
 <?php
 //header('Content-Type: text/html; charset=utf-8');
-
-
 $serverName = "localhost";
 $userName = "root";
 $password = "";
