@@ -45,11 +45,13 @@ $(document).ready(function () {
     //add route on map
     function drawRouteBetweenMarker(officesCoord) {
 
+        //Ограничение для google api 8 точек рисует, больше нет, только попарно ниже else
+        if(officesCoord.length<1){
         var mapRoute = {map: map};
         var directionsDisplay = new google.maps.DirectionsRenderer(mapRoute);
+
         var start = officesCoord[0].lat+','+ officesCoord[0].lng;
         var end = officesCoord[officesCoord.length-1].lat+','+ officesCoord[officesCoord.length-1].lng;
-
 
         var wps = [];
         ///первый и последний офис не вносим только промежуточные точки
@@ -78,6 +80,40 @@ $(document).ready(function () {
                 console.log("Directions Request from " + start.toUrlValue(6) + " to " + end.toUrlValue(6) + " failed: " + status)
             }
         })
+        }
+        else
+        {
+            for(var i=0; i<officesCoord.length-1; i++)
+            {
+                //directionsService.route использует аякс запросы поэтому - замыкание
+                (function (i) {
+
+                var directionsDisplay;
+                var directionsService = new google.maps.DirectionsService();
+                var mapRoute = {map: map};
+
+                directionsDisplay = new google.maps.DirectionsRenderer(mapRoute);
+
+                var start = officesCoord[i].lat+','+ officesCoord[i].lng;
+                var end = officesCoord[i+1].lat+','+ officesCoord[i+1].lng;
+
+                var request = {
+                    origin: start,
+                    destination: end,
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+                    directionsService.route(request, function (response, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            directionsDisplay.setDirections(response);
+                            // directionsDisplay.setMap(map);
+                        } else {
+                            console.log("Directions Request from " + start.toUrlValue(6) + " to " + end.toUrlValue(6) + " failed: " + status)
+                        }
+                    })
+                })(i);
+
+            }
+        }
     }
 
 
@@ -202,6 +238,8 @@ $(document).ready(function () {
                 var distanceFormat = sumDistance/1000;
                 $("#res").html(distanceFormat+" км");
                 $("#resTime").html(timeFormat+" Час:Мин:Сек");
+
+                //this data for save basedata
                 calcTrackTime.track = distanceFormat;
                 calcTrackTime.time = timeFormat;
             });
@@ -216,13 +254,33 @@ $(document).ready(function () {
         $('.office-route').css({'color':'green','font-weight':'bold','font-size': '30px'});
     });
 
-    $('#add-route').click(function () {
+    $('#add-route').submit(function (e) {
 
         console.log("#add-route click");
         console.log("allOffice: ",allOffice);
         console.log("calcTrackTime: ",calcTrackTime);
 
+        var indexMail = [];
 
+        for(var i=0, j=allOffice.length; i<j; i++)
+        {
+            var index = {};
+            index.indexmail = allOffice[i].indexmail;
+            indexMail.push(index);
+        }
+        console.log("indexMail: ",indexMail);
+
+        var jsonIndexMail =  JSON.stringify(indexMail);
+
+        console.log("jsonIndexMail: ",jsonIndexMail);
+
+        calcTrackTime.routepost = jsonIndexMail;
+
+        calcTrackTime.numberoute = $('#number').val();
+
+        console.log("calcTrackTime", calcTrackTime);
+
+        e.preventDefault();
 
     });
 

@@ -46,11 +46,11 @@
             </div>
     </div>
         <div class="route-add">
-            <form action="">
+            <form id="add-route" action="">
             <label for="number">Номер маршрута
-                <input type="number" min="1" max="201" required/>
+                <input id="number" type="number" min="1" max="201" required/>
             </label>
-                <input id="add-route" type="submit" value="Запомнить маршрут" />
+                <input type="submit" value="Запомнить маршрут" />
             </form>
         </div>
     </div>

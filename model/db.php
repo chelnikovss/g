@@ -1,12 +1,6 @@
 <?php
 //header('Content-Type: text/html; charset=utf-8');
-$serverName = "localhost";
-$userName = "root";
-$password = "";
-$dbname = "Routecalculation";
-
-$coordinate = array();
-
+include('variables.php');
 @$conn = new mysqli($serverName, $userName, $password, $dbname);
 
 if(!$conn)
