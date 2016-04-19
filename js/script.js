@@ -151,7 +151,7 @@ $(document).ready(function () {
 
     //TODO:: jquery-ajax-submit-form
     $("#offices").submit(function (e) {
-        var url = "./model/db.php";
+        var url = "./model/getoffice.php";
         $.ajax({
             type: "POST",
             url: url,
@@ -168,7 +168,6 @@ $(document).ready(function () {
     function addOfficeRoute(office) {
         console.log("office:",office);
         $( ".office-route" ).append( office.indexmail+"<br>" );
-
 
         var addOffice = {};
         addOffice.lat = office.latlocation;
@@ -243,11 +242,6 @@ $(document).ready(function () {
                 calcTrackTime.track = distanceFormat;
                 calcTrackTime.time = timeFormat;
             });
-
-            //var tempLocation = {};
-            //tempLocation.point = start;
-            //coordOfficeOnRoute.push(tempLocation);
-
         }
         drawRouteBetweenMarker(allOffice);
         $('.res-dist h2').show();
@@ -256,9 +250,7 @@ $(document).ready(function () {
 
     $('#add-route').submit(function (e) {
 
-        console.log("#add-route click");
-        console.log("allOffice: ",allOffice);
-        console.log("calcTrackTime: ",calcTrackTime);
+        console.log("#add-route click","allOffice: ",allOffice,"calcTrackTime: ",calcTrackTime);
 
         var indexMail = [];
 
@@ -279,6 +271,23 @@ $(document).ready(function () {
         calcTrackTime.numberoute = $('#number').val();
 
         console.log("calcTrackTime", calcTrackTime);
+
+
+        var url = "./model/addroute.php";
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {calcTrackTime: calcTrackTime},
+            success: function (data) {
+                console.log("data ", data);
+                if(data==true){
+                    alert("Маршрут добавлен ")
+                }
+                else{
+                    alert("Ошибка ")
+                }
+            }
+        })
 
         e.preventDefault();
 

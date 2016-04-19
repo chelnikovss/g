@@ -354,7 +354,7 @@ $(document).ready(function () {
 
     //TODO:: jquery-ajax-submit-form
     $("#offices").submit(function (e) {
-        var url = "./model/db.php";
+        var url = "./model/getoffice.php";
         $.ajax({
             type: "POST",
             url: url,
